@@ -56,15 +56,21 @@ Run %GATLING_HOME%\bin\recorder.bat
 
 Then you will see the following window:
 
-![Image of recorder](https://github.com/agnakro/gatling-tutorial/img/recorder.png)
+![Image of recorder](https://github.com/agnakro/gatling-tutorial/tree/master/img/recorder.png)
 
 Let's discuss marked points:
 
-	1. Selected HTTPS mode: Certificate Authority. That point was discussed in the previous section, but you can align with the example and check whether is the same.
-	2. Package: tutorial. Name of the package must be added, it's a name of your choice but remember to be specific when naming things.
-	3. Class Name: RecorderdSimulation. Default name of the simulation, this one is good therefore I don't change it.
-	4. Simulation folder. Path of the folder where simulations will be stored.
-	5. Filters section. Let's set up strategy of our recorder for 'BlackList First' and then select 'No static resources' button at the bottom. Blacklist column will be filled automatically.
+	1. Selected HTTPS mode: Certificate Authority. 
+	That point was discussed in the previous section, but you can align with the example and check whether is the same.
+	2. Package: tutorial.
+	Name of the package must be added, it's a name of your choice but remember to be specific when naming things.
+	3. Class Name: RecorderdSimulation. 
+	Default name of the simulation, this one is good therefore I don't change it.
+	4. Simulation folder. 
+	Path of the folder where simulations will be stored.
+	5. Filters section. 
+	Let's set up strategy of our recorder for 'BlackList First' and then select 'No static resources' button at the bottom. 
+	Blacklist column will be filled automatically.
 
 
 
