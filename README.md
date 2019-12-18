@@ -56,7 +56,7 @@ Run %GATLING_HOME%\bin\recorder.bat
 
 Then you will see the following window:
 
-![Image of recorder](https://github.com/agnakro/gatling-tutorial/tree/master/img/recorder.png)
+![Image of recorder](img/recorder.png)
 
 Let's discuss marked points:
 
