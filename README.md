@@ -47,15 +47,19 @@ To run gatling, setting up System Envirnoment Variables is required:
 ## Recorder
 
 Read this chapter to understand how gatling is paired with the browser and how it mimics your steps: 
+
 [Link to gatling/recorder](https://gatling.io/docs/3.3/http/recorder)
 
 Let's run recorder and proceed further with configuration around the subject.
+
 Run %GATLING_HOME%\bin\recorder.bat
 
 Then you will see the following window:
+
 ![Image of recorder](https://github.com/agnakro/gatling-tutorial/img/recorder.png)
 
 Let's discuss marked points:
+
 	1. Selected HTTPS mode: Certificate Authority. That point was discussed in the previous section, but you can align with the example and check whether is the same.
 	2. Package: tutorial. Name of the package must be added, it's a name of your choice but remember to be specific when naming things.
 	3. Class Name: RecorderdSimulation. Default name of the simulation, this one is good therefore I don't change it.
