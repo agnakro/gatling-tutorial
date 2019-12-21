@@ -61,24 +61,28 @@ Then you will see the following window:
 Let's discuss marked points:
 
 	1. Selected HTTPS mode: Certificate Authority. 
-	That point was discussed in the previous section, but you can align with the example and check whether is the same.
+	   That point was discussed in the previous section, but you can align with the example and check whether is the same.
+
 	2. Package: tutorial.
-	Name of the package must be added, it's a name of your choice but remember to be specific when naming things.
+	   Name of the package must be added, it's a name of your choice but remember to be specific when naming things.
+
 	3. Class Name: RecorderdSimulation. 
-	Default name of the simulation, this one is good therefore I don't change it.
+	   Default name of the simulation, this one is good therefore I don't change it.
+
 	4. Simulation folder. 
-	Path of the folder where simulations will be stored.
+	   Path of the folder where simulations will be stored.
+
 	5. Filters section. 
-	Let's set up strategy of our recorder for 'BlackList First' and then select 'No static resources' button at the bottom. 
-	Blacklist column will be filled automatically.
-
-
+	   Let's set up strategy of our recorder for 'BlackList First' and then select 'No static resources' button at the bottom. 
+	   Blacklist column will be filled automatically.
 
 ## Recorded script
 
-Now, when we have all configured let's record the given scenario. We're going to use [automationpractice website](http://automationpractice.com/index.php) witch is a mockup online shop. 
+Now, when we have all configured let's record the given steps. We're going to use [automationpractice website](http://automationpractice.com/index.php) witch is a mockup online shop. 
 
-First select 'Start!' button on gatling GUI and execute the following steps:
+First select 'Start!' button on recorder GUI and execute:
+
+__The following scenario__
 
 |Step|Description                          |Expected Result                                      |
 |----|-------------------------------------|-----------------------------------------------------|
@@ -95,5 +99,161 @@ First select 'Start!' button on gatling GUI and execute the following steps:
 |11|Select 'Pay by bank wire' option|Order summary page displayed|
 |12|Select 'I confirm my order' button|Order confirmation page displayed|
 
+Then select 'Stop&Save' button on recorder GUI.
 
-## Your own script
+Congrats! You've just recorded your first simulation using gatling. In the next chapter we will take a look on the generated scenario and dive into the code a little bit.
+
+## Script explanation
+
+1. Go to the location:
+   %GATLING_HOME%\user-files\simulations\tutorial and open file *RecordedSimulation.scala*.
+   Use code editor of your choice.
+
+2. You will see a code similar to the one added to the project on location:
+   %GATLING_HOME%\user-files\simulations\tutorial\MyRecordedSimulation.scala
+
+3. There is a lot of code in the file and it can be overwhelming at first. I cut it into blocks and explaine what we need and what can be refactored. You can see point commented and the explanation that follows them.
+
+__package, imports, class, httpProtocol, headers, uri__
+
+
+```scala
+package tutorial // 1
+
+import scala.concurrent.duration._ // 2
+
+import io.gatling.core.Predef._
+import io.gatling.http.Predef._
+import io.gatling.jdbc.Predef._
+
+class MyRecordedSimulation extends Simulation { // 3
+
+	val httpProtocol = http // 4 
+		.baseURL("http://automationpractice.com") // 5
+		.disableFollowRedirect
+		.disableAutoReferer
+		.acceptHeader("text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8") // 6
+		.acceptEncodingHeader("gzip, deflate")
+		.acceptLanguageHeader("pl,en-US;q=0.7,en;q=0.3")
+		.userAgentHeader("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:71.0) Gecko/20100101 Firefox/71.0")
+	// 7
+	val headers_0 = Map( 
+		"Cache-Control" -> "max-age=0",
+		"Referer" -> "http://automationpractice.com/index.php",
+		"Upgrade-Insecure-Requests" -> "1")
+
+	val headers_1 = Map(
+		"Accept" -> "*/*",
+		"Cache-Control" -> "no-cache",
+		"Pragma" -> "no-cache")
+
+	val headers_4 = Map(
+		"Accept" -> "text/css,*/*;q=0.1",
+		"Accept-Encoding" -> "gzip, deflate, br",
+		"Cache-Control" -> "max-age=0",
+		"Referer" -> "http://automationpractice.com/index.php")
+
+	val headers_5 = Map(
+		"Accept" -> "*/*",
+		"Accept-Encoding" -> "gzip, deflate, br",
+		"Origin" -> "http://automationpractice.com",
+		"Referer" -> "http://automationpractice.com/index.php")
+
+	val headers_6 = Map(
+		"Accept" -> "*/*",
+		"Accept-Encoding" -> "gzip, deflate, br",
+		"Origin" -> "http://automationpractice.com",
+		"Referer" -> "http://automationpractice.com/")
+
+	val headers_7 = Map(
+		"Accept" -> "application/json, text/javascript, */*; q=0.01",
+		"Referer" -> "http://automationpractice.com/index.php",
+		"X-Requested-With" -> "XMLHttpRequest")
+
+	val headers_9 = Map(
+		"Referer" -> "http://automationpractice.com/index.php",
+		"Upgrade-Insecure-Requests" -> "1")
+
+	val headers_10 = Map(
+		"Referer" -> "http://automationpractice.com/index.php?controller=search&orderby=position&orderway=desc&search_query=dress&submit_search=",
+		"Upgrade-Insecure-Requests" -> "1")
+
+	val headers_11 = Map(
+		"Accept" -> "application/json, text/javascript, */*; q=0.01",
+		"Content-Type" -> "application/x-www-form-urlencoded; charset=UTF-8",
+		"Origin" -> "http://automationpractice.com",
+		"Referer" -> "http://automationpractice.com/index.php?id_product=7&controller=product",
+		"X-Requested-With" -> "XMLHttpRequest",
+		"cache-control" -> "no-cache")
+
+	val headers_12 = Map(
+		"Referer" -> "http://automationpractice.com/index.php?id_product=7&controller=product",
+		"Upgrade-Insecure-Requests" -> "1")
+
+	val headers_13 = Map(
+		"Referer" -> "http://automationpractice.com/index.php?controller=order",
+		"Upgrade-Insecure-Requests" -> "1")
+
+	val headers_18 = Map(
+		"Origin" -> "http://automationpractice.com",
+		"Referer" -> "http://automationpractice.com/index.php?controller=authentication&multi-shipping=0&display_guest_checkout=0&back=http%3A%2F%2Fautomationpractice.com%2Findex.php%3Fcontroller%3Dorder%26step%3D1%26multi-shipping%3D0",
+		"Upgrade-Insecure-Requests" -> "1")
+
+	val headers_19 = Map(
+		"Referer" -> "http://automationpractice.com/index.php?controller=authentication&multi-shipping=0&display_guest_checkout=0&back=http%3A%2F%2Fautomationpractice.com%2Findex.php%3Fcontroller%3Dorder%26step%3D1%26multi-shipping%3D0",
+		"Upgrade-Insecure-Requests" -> "1")
+
+	val headers_20 = Map(
+		"Origin" -> "http://automationpractice.com",
+		"Referer" -> "http://automationpractice.com/index.php?controller=order&step=1&multi-shipping=0",
+		"Upgrade-Insecure-Requests" -> "1")
+
+	val headers_21 = Map(
+		"Origin" -> "http://automationpractice.com",
+		"Referer" -> "http://automationpractice.com/index.php?controller=order",
+		"Upgrade-Insecure-Requests" -> "1")
+
+	val headers_22 = Map(
+		"Referer" -> "http://automationpractice.com/index.php?controller=order&multi-shipping=",
+		"Upgrade-Insecure-Requests" -> "1")
+
+	val headers_23 = Map(
+		"Origin" -> "http://automationpractice.com",
+		"Referer" -> "http://automationpractice.com/index.php?fc=module&module=bankwire&controller=payment",
+		"Upgrade-Insecure-Requests" -> "1")
+
+	val headers_24 = Map(
+		"Referer" -> "http://automationpractice.com/index.php?fc=module&module=bankwire&controller=payment",
+		"Upgrade-Insecure-Requests" -> "1")
+	// 8
+    val uri1 = "https://connect.facebook.net:443/en_US/all.js"
+    val uri2 = "https://www.facebook.com:443/x/oauth/status"
+    val uri4 = "http://detectportal.firefox.com/success.txt"
+    val uri5 = "fonts.googleapis.com"
+```
+
+1. package
+   optional package - we daclared it in the recorder configuration.
+
+2. import
+   required imports
+
+3. class
+   the class declaration that extends `Simulation`
+
+4. http
+   configuration for all http requests
+
+5. baseURL
+   that is appended to all urls.
+   Note: if your recorded script has different `baseURL` change it for `http://automationpractice.com"`
+
+6. acceptHeader
+   common headers that will be sent with requests
+
+7. headers
+   generated headers. As you can see I have 24 different headers! It's too much to follow, therefore in the next steps we will refactor them and create just one unique `header` 
+
+8. uri
+   generated uris
+   
