@@ -116,7 +116,6 @@ Congrats! You've just recorded your first simulation using gatling. In the next 
 
 __package, imports, class, httpProtocol, headers, uri__
 
-
 ```scala
 package tutorial // 1
 
@@ -232,28 +231,203 @@ class MyRecordedSimulation extends Simulation { // 3
     val uri5 = "fonts.googleapis.com"
 ```
 
-1. package
-   optional package - we daclared it in the recorder configuration.
+	1. package
+	   optional package - we daclared it in the recorder configuration.
 
-2. import
-   required imports
+	2. import
+	   required imports
 
-3. class
-   the class declaration that extends `Simulation`
+	3. class
+	   the class declaration that extends `Simulation`
 
-4. http
-   configuration for all http requests
+	4. http
+	   configuration for all http requests
 
-5. baseURL
-   that is appended to all urls.
-   Note: if your recorded script has different `baseURL` change it for `http://automationpractice.com"`
+	5. baseURL
+	   that is appended to all urls.
+       Note: if your recorded script has different `baseURL` change it for `http://automationpractice.com"`
 
-6. acceptHeader
-   common headers that will be sent with requests
+	6. acceptHeader
+	   common headers that will be sent with requests
 
-7. headers
-   generated headers. As you can see I have 24 different headers! It's too much to follow, therefore in the next steps we will refactor them and create just one unique `header` 
+	7. headers
+	   generated headers. As you can see I have 24 different headers! It's too much to follow, therefore in the next steps we will refactor them and create just one unique `header` 
 
-8. uri
-   generated uris
-   
+	8. uri
+	   generated uris
+
+__Let's refactor__
+
+As I mentioned before, there are 24 `headers` in my script. I'd like to have just one and it will look like this:
+
+```scala
+	val headers = Map(
+			"Cache-Control" -> "max-age=0",
+			"Content-Type" -> "application/json; charset=UTF-8; application/x-www-form-urlencoded",
+			"X-Requested-With" -> "XMLHttpRequest",
+			"Upgrade-Insecure-Requests" -> "1")
+```
+I extracted only those properties that are unique and put them into one method
+```scala
+Map()
+```
+There are no `"Origin" -> "http://automationpractice.com"` and `"Referer" -> "http://automationpractice.com/index.php"` any more as they point out directely to our baseURL.
+
+The second step will be to get rid of `uri`. Frankly speaking we don't need them.
+
+Now let's take a look on our refactored piece of code:
+
+```scala
+package tutorial
+
+import scala.concurrent.duration._
+
+import io.gatling.core.Predef._
+import io.gatling.http.Predef._
+import io.gatling.jdbc.Predef._
+
+class MyRecordedSimulation extends Simulation {
+
+	val httpProtocol = http
+		.baseURL("http://automationpractice.com")
+		.disableFollowRedirect
+		.disableAutoReferer
+		.acceptHeader("text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+		.acceptEncodingHeader("gzip, deflate")
+		.acceptLanguageHeader("pl,en-US;q=0.7,en;q=0.3")
+		.userAgentHeader("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:71.0) Gecko/20100101 Firefox/71.0")
+
+	val headers = Map(
+		"Cache-Control" -> "max-age=0",
+		"Content-Type" -> "application/json; charset=UTF-8; application/x-www-form-urlencoded",
+		"X-Requested-With" -> "XMLHttpRequest",
+		"Upgrade-Insecure-Requests" -> "1")
+```
+
+Have you noticed how much shorter the script is and how understandable it is? Nice! You are ready to go further and clean up scenario part.
+
+__scenario__
+
+```scala
+val scn = scenario("RecordedSimulation")
+		.exec(http("request_0")
+			.get("/index.php")
+			.headers(headers_0))
+		.pause(333 milliseconds)
+		.exec(http("request_1")
+			.get(uri4 + "")
+			.headers(headers_1))
+		.exec(http("request_2")
+			.get(uri4 + "?ipv4")
+			.headers(headers_1))
+		.exec(http("request_3")
+			.get(uri4 + "?ipv6")
+			.headers(headers_1))
+		.exec(http("request_4")
+			.get("https://" + uri5 + ":443/css?family=Open+Sans:300,600&subset=latin,latin-ext")
+			.headers(headers_4))
+		.pause(4)
+		.exec(http("request_5")
+			.get(uri1 + "?hash=a17f20a15b721a85de37dccc09319252")
+			.headers(headers_5))
+		.pause(372 milliseconds)
+		.exec(http("request_6")
+			.get(uri2 + "?client_id=334341610034299&input_token&origin=1&redirect_uri=http%3A%2F%2Fautomationpractice.com%2Findex.php&sdk=joey&wants_cookie_data=false")
+			.headers(headers_6))
+		.pause(3)
+		.exec(http("request_7")
+			.get("/index.php?controller=search&q=dres&limit=10&timestamp=1576956190502&ajaxSearch=1&id_lang=1")
+			.headers(headers_7))
+		.pause(196 milliseconds)
+		.exec(http("request_8")
+			.get("/index.php?controller=search&q=dress&limit=10&timestamp=1576956191346&ajaxSearch=1&id_lang=1")
+			.headers(headers_7))
+		.pause(527 milliseconds)
+		.exec(http("request_9")
+			.get("/index.php?controller=search&orderby=position&orderway=desc&search_query=dress&submit_search=")
+			.headers(headers_9))
+		.pause(5)
+		.exec(http("request_10")
+			.get("/index.php?id_product=7&controller=product")
+			.headers(headers_10))
+		.pause(9)
+		.exec(http("request_11")
+			.post("/index.php?rand=1576956212168")
+			.headers(headers_11)
+			.formParam("controller", "cart")
+			.formParam("add", "1")
+			.formParam("ajax", "true")
+			.formParam("qty", "1")
+			.formParam("id_product", "7")
+			.formParam("token", "e817bb0705dd58da8db074c69f729fd8")
+			.formParam("ipa", "34"))
+		.pause(1)
+		.exec(http("request_12")
+			.get("/index.php?controller=order")
+			.headers(headers_12))
+		.pause(6)
+		.exec(http("request_13")
+			.get("/index.php?controller=order&step=1")
+			.headers(headers_13)
+			.check(status.is(302)))
+		.exec(http("request_14")
+			.get("/index.php?controller=authentication&multi-shipping=0&display_guest_checkout=0&back=http%3A%2F%2Fautomationpractice.com%2Findex.php%3Fcontroller%3Dorder%26step%3D1%26multi-shipping%3D0")
+			.headers(headers_13))
+		.pause(17)
+		.exec(http("request_15")
+			.get(uri4 + "")
+			.headers(headers_1))
+		.exec(http("request_16")
+			.get(uri4 + "?ipv4")
+			.headers(headers_1))
+		.exec(http("request_17")
+			.get(uri4 + "?ipv6")
+			.headers(headers_1))
+		.pause(9)
+		.exec(http("request_18")
+			.post("/index.php?controller=authentication")
+			.headers(headers_18)
+			.formParam("email", "d6403887@urhen.com")
+			.formParam("passwd", "test123")
+			.formParam("back", "http://automationpractice.com/index.php?controller=order&step=1&multi-shipping=0")
+			.formParam("SubmitLogin", "")
+			.check(status.is(302)))
+		.exec(http("request_19")
+			.get("/index.php?controller=order&step=1&multi-shipping=0")
+			.headers(headers_19))
+		.pause(8)
+		.exec(http("request_20")
+			.post("/index.php?controller=order")
+			.headers(headers_20)
+			.formParam("id_address_delivery", "248877")
+			.formParam("same", "1")
+			.formParam("message", "")
+			.formParam("step", "2")
+			.formParam("back", "")
+			.formParam("processAddress", ""))
+		.pause(5)
+		.exec(http("request_21")
+			.post("/index.php?controller=order&multi-shipping=")
+			.headers(headers_21)
+			.formParam("delivery_option[248877]", "2,")
+			.formParam("cgv", "1")
+			.formParam("step", "3")
+			.formParam("back", "")
+			.formParam("processCarrier", ""))
+		.pause(3)
+		.exec(http("request_22")
+			.get("/index.php?fc=module&module=bankwire&controller=payment")
+			.headers(headers_22))
+		.pause(3)
+		.exec(http("request_23")
+			.post("/index.php?fc=module&module=bankwire&controller=validation")
+			.headers(headers_23)
+			.formParam("currency_payement", "1")
+			.check(status.is(302)))
+		.exec(http("request_24")
+			.get("/index.php?controller=order-confirmation&id_cart=1471161&id_module=3&id_order=154287&key=57d0627de3b5d408346f0e1d3996430e")
+			.headers(headers_24))
+
+	setUp(scn.inject(atOnceUsers(1))).protocols(httpProtocol)
+}
+```
