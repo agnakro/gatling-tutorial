@@ -76,5 +76,23 @@ Let's discuss marked points:
 
 ## Recorded script
 
+Now, when we have all configured let's record the given scenario. We're going to use [automationpractice website](http://automationpractice.com/index.php) witch is a mockup online shop. 
+
+First select 'Start!' button on gatling GUI and execute the following steps:
+
+|Step|Description|Expected Result|
+|1|Navigate to the browser and go to the website: http://automationpractice.com/index.php|Shop's home page visible|
+|2|In ‘Search’ field type 'dress'|In the field the given word displayed|
+|3|Then hit search button|A list with search results displayed|
+|4|Select 'Printed Chiffon Dress'|Details of the selected dress displayed|
+|5|Select 'Add to cart' button|Dress added to shopping cart|
+|6|Select 'Proceed to checkout' button|Shopping cart summary displayed|
+|7|Select 'Proceed to checkout' button|Authentication page displayed|
+|8|Log in to account using email: d6403887@urhen.com and passowrd: test123 and 'Sign in'|Address page displayed|
+|9|Select 'Proceed to checkout' button|Shipping page displayed|
+|10|Check the Terms of service box and then select 'Proceed to checkout' button|Payment page displayed|
+|11|Select 'Pay by bank wire' option|Order summary page displayed|
+|12|Select 'I confirm my order' button|Order confirmation page displayed|
+
 
 ## Your own script
