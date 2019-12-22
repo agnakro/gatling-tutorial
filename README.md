@@ -1,8 +1,8 @@
 # gatling-tutorial
 
-This is a comprehensive tutorial how to start performance testing with gatling.io.
+This is a comprehensive tutorial on how to start performance testing with gatling.io.
 
-Let's assume that you are pretty new to performance testing but have some experience in testing over all. Great! This place is for you. The purpose of this tutorial is to know basics around the tool - gatling.io and its R&R functionality. I will try to show you how to set up an environment, the tool and explain essenssials regarding recorded scenario.
+Let's assume that you are pretty new to performance testing but have some experience in testing over all. Great! This place is for you. The purpose of this tutorial is to know basics around the tool - gatling.io and its R&R functionality. I will try to show you how to set up an environment, the tool and explain essentials regarding recorded scenario.
 
 ## Installations
 
@@ -78,22 +78,22 @@ Let's discuss marked points:
 
 ## Recorded script
 
-Now, when we have all configured let's record the given steps. We're going to use [automationpractice website](http://automationpractice.com/index.php) witch is a mockup online shop. 
+Now, when all is configured let's record the given steps. We're going to use [automationpractice website](http://automationpractice.com/index.php) which is a mockup online shop. 
 
-First select 'Start!' button on recorder GUI and execute:
+First select 'Start!' button and execute:
 
 __The following scenario__
 
 |Step|Description                          |Expected Result                                      |
 |----|-------------------------------------|-----------------------------------------------------|
-|1|Navigate to the browser and go to the website: http://automationpractice.com/index.php|Shop's home page visible|
-|2|In ‘Search’ field type 'dress'|In the field the given word displayed|
-|3|Then hit search button|A list with search results displayed|
+|1|Open the browser and navigate to the website: http://automationpractice.com/index.php|Shop's home page visible|
+|2|Type 'dress' in 'Search' field|The given word displayed|
+|3|Hit search button|A list with search results displayed|
 |4|Select 'Printed Chiffon Dress'|Details of the selected dress displayed|
 |5|Select 'Add to cart' button|Dress added to shopping cart|
 |6|Select 'Proceed to checkout' button|Shopping cart summary displayed|
 |7|Select 'Proceed to checkout' button|Authentication page displayed|
-|8|Log in to account using email: d6403887@urhen.com and passowrd: test123 and then select 'Sign in'|Address page displayed|
+|8|Login using email: d6403887@urhen.com and passowrd: test123 and then select 'Sign in'|Address page displayed|
 |9|Select 'Proceed to checkout' button|Shipping page displayed|
 |10|Check the Terms of service box and then select 'Proceed to checkout' button|Payment page displayed|
 |11|Select 'Pay by bank wire' option|Order summary page displayed|
@@ -117,25 +117,47 @@ Congrats! You've just recorded your first simulation using gatling. In the next 
 __package, imports, class, httpProtocol, headers, uri__
 
 ```scala
-package tutorial // 1
+package tutorial
+```
 
-import scala.concurrent.duration._ // 2
+optional package - we daclared it in the recorder configuration.
+
+```scala
+import scala.concurrent.duration._ 
 
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import io.gatling.jdbc.Predef._
+```
 
-class MyRecordedSimulation extends Simulation { // 3
+required imports
 
-	val httpProtocol = http // 4 
-		.baseURL("http://automationpractice.com") // 5
+```scala
+class MyRecordedSimulation extends Simulation {
+```
+
+the class declaration that extends `Simulation`
+
+
+```scala
+	val httpProtocol = http
+		.baseURL("http://automationpractice.com")
 		.disableFollowRedirect
 		.disableAutoReferer
-		.acceptHeader("text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8") // 6
+		.acceptHeader("text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
 		.acceptEncodingHeader("gzip, deflate")
 		.acceptLanguageHeader("pl,en-US;q=0.7,en;q=0.3")
 		.userAgentHeader("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:71.0) Gecko/20100101 Firefox/71.0")
-	// 7
+```
+
+configuration for all http requests:
+`baseURL` is appended to all urls.
+	Note: if your recorded script has different `baseURL` change it for `"http://automationpractice.com"`
+`acceptHeader`
+	common headers that will be sent with requests
+
+
+```scala
 	val headers_0 = Map( 
 		"Cache-Control" -> "max-age=0",
 		"Referer" -> "http://automationpractice.com/index.php",
@@ -224,37 +246,19 @@ class MyRecordedSimulation extends Simulation { // 3
 	val headers_24 = Map(
 		"Referer" -> "http://automationpractice.com/index.php?fc=module&module=bankwire&controller=payment",
 		"Upgrade-Insecure-Requests" -> "1")
-	// 8
+```
+
+generated headers. As you can see I have 24 different headers! It's too much to follow, therefore in the next steps we will refactor them and create just one unique `header`
+
+```scala
     val uri1 = "https://connect.facebook.net:443/en_US/all.js"
     val uri2 = "https://www.facebook.com:443/x/oauth/status"
     val uri4 = "http://detectportal.firefox.com/success.txt"
     val uri5 = "fonts.googleapis.com"
 ```
 
-	1. package
-	   optional package - we daclared it in the recorder configuration.
+generated uris
 
-	2. import
-	   required imports
-
-	3. class
-	   the class declaration that extends `Simulation`
-
-	4. http
-	   configuration for all http requests
-
-	5. baseURL
-	   that is appended to all urls.
-       Note: if your recorded script has different `baseURL` change it for `http://automationpractice.com"`
-
-	6. acceptHeader
-	   common headers that will be sent with requests
-
-	7. headers
-	   generated headers. As you can see I have 24 different headers! It's too much to follow, therefore in the next steps we will refactor them and create just one unique `header` 
-
-	8. uri
-	   generated uris
 
 __Let's refactor__
 
@@ -271,7 +275,11 @@ I extracted only those properties that are unique and put them into one method
 ```scala
 Map()
 ```
-There are no `"Origin" -> "http://automationpractice.com"` and `"Referer" -> "http://automationpractice.com/index.php"` any more as they point out directely to our baseURL.
+
+There are no
+   `"Origin" -> "http://automationpractice.com"` 
+   `"Referer" -> "http://automationpractice.com/index.php"`
+any more as they point out directely to our baseURL.
 
 The second step will be to get rid of `uri`. Frankly speaking we don't need them.
 
@@ -304,7 +312,7 @@ class MyRecordedSimulation extends Simulation {
 		"Upgrade-Insecure-Requests" -> "1")
 ```
 
-Have you noticed how much shorter the script is and how understandable it is? Nice! You are ready to go further and clean up scenario part.
+Have you noticed how much shorter this chunk is and how understandable it is? Nice! You are ready to go further and clean up scenario part.
 
 __scenario__
 
