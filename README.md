@@ -151,10 +151,12 @@ the class declaration that extends `Simulation`
 ```
 
 configuration for all http requests:
-`baseURL` is appended to all urls.
-	Note: if your recorded script has different `baseURL` change it for `"http://automationpractice.com"`
-`acceptHeader`
-	common headers that will be sent with requests
+
+   `baseURL` is appended to all urls.
+      Note: if your recorded script has different `baseURL` change it for `"http://automationpractice.com"`
+
+   `acceptHeader`
+      common headers that will be sent with requests
 
 
 ```scala
@@ -271,17 +273,14 @@ As I mentioned before, there are 24 `headers` in my script. I'd like to have jus
 			"X-Requested-With" -> "XMLHttpRequest",
 			"Upgrade-Insecure-Requests" -> "1")
 ```
-I extracted only those properties that are unique and put them into one method
-```scala
-Map()
-```
+I extracted only those properties that are unique and put them into one method `Map()`
 
 There are no
    `"Origin" -> "http://automationpractice.com"` 
    `"Referer" -> "http://automationpractice.com/index.php"`
 any more as they point out directely to our baseURL.
 
-The second step will be to get rid of `uri`. Frankly speaking we don't need them.
+The second step will be to get rid of `uri`. Frankly speaking we don't need them, they point out irrelevant websites.
 
 Now let's take a look on our refactored piece of code:
 
@@ -312,16 +311,45 @@ class MyRecordedSimulation extends Simulation {
 		"Upgrade-Insecure-Requests" -> "1")
 ```
 
-Have you noticed how much shorter this chunk is and how understandable it is? Nice! You are ready to go further and clean up scenario part.
+Have you noticed how much shorter this code is and how understandable it is? Nice! You are ready to go further and clean up scenario part.
 
 __scenario__
 
+In the next steps I'm going to explain the main part of the script - `scenario`. Then I'll refactor the code.
+Recorded script is added to the project under [user-files/simulations](user-files/simulations/MyRecordedSimulation.scala)
+
+
 ```scala
 val scn = scenario("RecordedSimulation")
+```
+
+the `scenario` definition
+
+```scala
 		.exec(http("request_0")
+```
+
+a HTTP request named request_0. This name will be displayed in the final reports. Some of those requests will be the subject of refactoring.
+
+```scala
 			.get("/index.php")
+```
+
+the url this request targets with the `GET` method
+
+```scala
 			.headers(headers_0))
+```
+
+`headers()` method with `headers_0` that is sent with the request. I refactored all 24 headers to have only one - `headers`. I'll use it when it's time for refactor. 
+
+```scala
 		.pause(333 milliseconds)
+```
+
+pause time
+
+```scala
 		.exec(http("request_1")
 			.get(uri4 + "")
 			.headers(headers_1))
@@ -343,6 +371,21 @@ val scn = scenario("RecordedSimulation")
 			.get(uri2 + "?client_id=334341610034299&input_token&origin=1&redirect_uri=http%3A%2F%2Fautomationpractice.com%2Findex.php&sdk=joey&wants_cookie_data=false")
 			.headers(headers_6))
 		.pause(3)
+		.exec(http("request_15")
+			.get(uri4 + "")
+			.headers(headers_1))
+		.exec(http("request_16")
+			.get(uri4 + "?ipv4")
+			.headers(headers_1))
+		.exec(http("request_17")
+			.get(uri4 + "?ipv6")
+			.headers(headers_1))
+		.pause(9)
+```
+
+In the previous steps, I deleted `uri` and indicated that those are irrelevant. The same is with this piece of code - it's irrelevant therefore it will be deleted.
+
+```scala
 		.exec(http("request_7")
 			.get("/index.php?controller=search&q=dres&limit=10&timestamp=1576956190502&ajaxSearch=1&id_lang=1")
 			.headers(headers_7))
@@ -382,16 +425,6 @@ val scn = scenario("RecordedSimulation")
 			.get("/index.php?controller=authentication&multi-shipping=0&display_guest_checkout=0&back=http%3A%2F%2Fautomationpractice.com%2Findex.php%3Fcontroller%3Dorder%26step%3D1%26multi-shipping%3D0")
 			.headers(headers_13))
 		.pause(17)
-		.exec(http("request_15")
-			.get(uri4 + "")
-			.headers(headers_1))
-		.exec(http("request_16")
-			.get(uri4 + "?ipv4")
-			.headers(headers_1))
-		.exec(http("request_17")
-			.get(uri4 + "?ipv6")
-			.headers(headers_1))
-		.pause(9)
 		.exec(http("request_18")
 			.post("/index.php?controller=authentication")
 			.headers(headers_18)
@@ -435,7 +468,13 @@ val scn = scenario("RecordedSimulation")
 		.exec(http("request_24")
 			.get("/index.php?controller=order-confirmation&id_cart=1471161&id_module=3&id_order=154287&key=57d0627de3b5d408346f0e1d3996430e")
 			.headers(headers_24))
+```
 
+This piece of code will be refactored in the next step.
+
+```scala
 	setUp(scn.inject(atOnceUsers(1))).protocols(httpProtocol)
 }
 ```
+
+`setUp` that will be launched in this `Simulation` with declaration to `inject` into scenario named `scn` one single user.
