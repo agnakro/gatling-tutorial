@@ -276,9 +276,12 @@ As I mentioned before, there are 24 `headers` in my script. I'd like to have jus
 I extracted only those properties that are unique and put them into one method `Map()`
 
 There are no
+
    `"Origin" -> "http://automationpractice.com"` 
    `"Referer" -> "http://automationpractice.com/index.php"`
+
 any more as they point out directely to our baseURL.
+
 
 The second step will be to get rid of `uri`. Frankly speaking we don't need them, they point out irrelevant websites.
 
@@ -329,7 +332,7 @@ the `scenario` definition
 		.exec(http("request_0")
 ```
 
-a HTTP request named request_0. This name will be displayed in the final reports. Some of those requests will be the subject of refactoring.
+a HTTP request named `request_0`. This name will be displayed in the final reports. Some of those requests will be the subject of refactoring.
 
 ```scala
 			.get("/index.php")
@@ -478,3 +481,6 @@ This piece of code will be refactored in the next step.
 ```
 
 `setUp` that will be launched in this `Simulation` with declaration to `inject` into scenario named `scn` one single user.
+
+
+__Scenario refactor__
