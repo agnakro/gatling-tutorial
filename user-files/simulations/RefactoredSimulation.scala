@@ -1,0 +1,118 @@
+package tutorial
+
+import scala.concurrent.duration._
+
+import io.gatling.core.Predef._
+import io.gatling.http.Predef._
+import io.gatling.jdbc.Predef._
+
+class RefactoredSimulation extends Simulation {
+
+	val httpProtocol = http
+		.baseUrl("http://automationpractice.com")
+		.disableFollowRedirect
+		.disableAutoReferer
+		.acceptHeader("text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+		.acceptEncodingHeader("gzip, deflate")
+		.acceptLanguageHeader("pl,en-US;q=0.7,en;q=0.3")
+		.userAgentHeader("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:71.0) Gecko/20100101 Firefox/71.0")
+
+	val headers = Map(
+		"Cache-Control" -> "max-age=0",
+		"Content-Type" -> "application/json; charset=UTF-8; application/x-www-form-urlencoded",
+		"X-Requested-With" -> "XMLHttpRequest",
+		"Upgrade-Insecure-Requests" -> "1")
+
+
+	val scn = scenario("RefactoredSimulation")
+		.exec(http("Home Page")
+			.get("/index.php")
+			.headers(headers))
+		.pause(5)
+		.exec(http("Input 'dres'")
+			.get("/index.php?controller=search&q=dres&limit=10&timestamp=1576956190502&ajaxSearch=1&id_lang=1")
+			.headers(headers))
+		.pause(5)
+		.exec(http("Input 'dress'")
+			.get("/index.php?controller=search&q=dress&limit=10&timestamp=1576956191346&ajaxSearch=1&id_lang=1")
+			.headers(headers))
+		.pause(5)
+		.exec(http("Search dress")
+			.get("/index.php?controller=search&orderby=position&orderway=desc&search_query=dress&submit_search=")
+			.headers(headers))
+		.pause(5)
+		.exec(http("Select 'Printed Chiffon Dress'")
+			.get("/index.php?id_product=7&controller=product")
+			.headers(headers))
+		.pause(5)
+		.exec(http("Select 'Add to cart")
+			.post("/index.php?rand=1576956212168")
+			.headers(headers)
+			.formParam("controller", "cart")
+			.formParam("add", "1")
+			.formParam("ajax", "true")
+			.formParam("qty", "1")
+			.formParam("id_product", "7")
+			.formParam("token", "e817bb0705dd58da8db074c69f729fd8")
+			.formParam("ipa", "34"))
+		.pause(5)
+		.exec(http("Select 'Proceed to checkout' button")
+			.get("/index.php?controller=order")
+			.headers(headers))
+		.pause(5)
+		.exec(http("Select 'Proceed to checkout' button")
+			.get("/index.php?controller=order&step=1")
+			.headers(headers))
+		.pause(5)
+		.exec(http("Authentication page")
+			.get("/index.php?controller=authentication&multi-shipping=0&display_guest_checkout=0&back=http%3A%2F%2Fautomationpractice.com%2Findex.php%3Fcontroller%3Dorder%26step%3D1%26multi-shipping%3D0")
+			.headers(headers))
+		.pause(5)
+		.exec(http("Log in to user's account")
+			.post("/index.php?controller=authentication")
+			.headers(headers)
+			.formParam("email", "d6403887@urhen.com")
+			.formParam("passwd", "test123")
+			.formParam("back", "http://automationpractice.com/index.php?controller=order&step=1&multi-shipping=0")
+			.formParam("SubmitLogin", ""))
+		.pause(5)
+		.exec(http("Delivery page")
+			.get("/index.php?controller=order&step=1&multi-shipping=0")
+			.headers(headers))
+		.pause(5)
+		.exec(http("Select Proceed to checkout button")
+			.post("/index.php?controller=order")
+			.headers(headers)
+			.formParam("id_address_delivery", "248877")
+			.formParam("same", "1")
+			.formParam("message", "")
+			.formParam("step", "2")
+			.formParam("back", "")
+			.formParam("processAddress", ""))
+		.pause(5)
+		.exec(http("Select Proceed to checkout button")
+			.post("/index.php?controller=order&multi-shipping=")
+			.headers(headers)
+			.formParam("delivery_option[248877]", "2,")
+			.formParam("cgv", "1")
+			.formParam("step", "3")
+			.formParam("back", "")
+			.formParam("processCarrier", ""))
+		.pause(5)
+		.exec(http("Select Pay by bank wire")
+			.get("/index.php?fc=module&module=bankwire&controller=payment")
+			.headers(headers))
+		.pause(5)
+		.exec(http("Bank wire validation")
+			.post("/index.php?fc=module&module=bankwire&controller=validation")
+			.headers(headers)
+			.formParam("currency_payement", "1")
+			.check(status.is(302)))
+		.pause(5)
+		.exec(http("Order confirmation")
+			.get("/index.php?controller=order-confirmation&id_cart=1471161&id_module=3&id_order=154287&key=57d0627de3b5d408346f0e1d3996430e")
+			.headers(headers)
+			.check(status.is(302)))
+
+	setUp(scn.inject(atOnceUsers(1))).protocols(httpProtocol)
+}
