@@ -9,7 +9,7 @@ import io.gatling.jdbc.Predef._
 class MyRecordedSimulation extends Simulation {
 
 	val httpProtocol = http
-		.baseURL("http://automationpractice.com")
+		.baseUrl("http://automationpractice.com")
 		.disableFollowRedirect
 		.disableAutoReferer
 		.acceptHeader("text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
