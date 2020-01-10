@@ -58,23 +58,24 @@ Then you will see the following window:
 
 ![Image of recorder](img/recorder.png)
 
+
 Let's discuss marked points:
 
-	1. Selected HTTPS mode: Certificate Authority. 
-	   That point was discussed in the previous section, but you can align with the example and check whether is the same.
+1. Selected HTTPS mode: Certificate Authority. 
+   That point was discussed in the previous section, but you can align with the example and check whether is the same.
 
-	2. Package: tutorial.
-	   Name of the package must be added, it's a name of your choice but remember to be specific when naming things.
+2. Package: tutorial.
+   Name of the package must be added, it's a name of your choice but remember to be specific when naming things.
 
-	3. Class Name: RecorderdSimulation. 
-	   Default name of the simulation, this one is good therefore I don't change it.
+3. Class Name: RecorderdSimulation. 
+   Default name of the simulation, this one is good therefore I don't change it.
 
-	4. Simulation folder. 
-	   Path of the folder where simulations will be stored.
+4. Simulation folder. 
+   Path of the folder where simulations will be stored.
 
-	5. Filters section. 
-	   Let's set up strategy of our recorder for 'BlackList First' and then select 'No static resources' button at the bottom. 
-	   Blacklist column will be filled automatically.
+5. Filters section. 
+   Let's set up strategy of our recorder for 'BlackList First' and then select 'No static resources' button at the bottom. 
+   Blacklist column will be filled automatically.
 
 ## Recorded script
 
@@ -277,8 +278,8 @@ I extracted only those properties that are unique and put them into one method `
 
 There are no
 
-   `"Origin" -> "http://automationpractice.com"` 
-   `"Referer" -> "http://automationpractice.com/index.php"`
+	`"Origin" -> "http://automationpractice.com"`
+	`"Referer" -> "http://automationpractice.com/index.php"`
 
 any more as they point out directely to our baseURL.
 
@@ -484,3 +485,155 @@ This piece of code will be refactored in the next step.
 
 
 __Scenario refactor__
+
+`request_0` is renamed to `Home Page`.
+`headers_n` are replaced with previousely refactored `headers`:
+
+```scala
+.exec(http("Home Page")
+	.get("/index.php")
+	.headers(headers))
+```
+
+`request_7` is renamed to `Input "dres"`:
+
+```scala
+.exec(http("Input 'dres'")
+	.get("/index.php?controller=search&q=dres&limit=10&timestamp=1576956190502&ajaxSearch=1&id_lang=1")
+	.headers(headers))
+```
+
+`request_8` is renamed to `Input "dress"`:
+
+```scala
+.exec(http("Input 'dress'")
+	.get("/index.php?controller=search&q=dress&limit=10&timestamp=1576956191346&ajaxSearch=1&id_lang=1")
+	.headers(headers))
+```		
+
+`request_9` is renamed to `Search dress`:
+
+```scala
+.exec(http("Search dress")
+	.get("/index.php?controller=search&orderby=position&orderway=desc&search_query=dress&submit_search=")
+	.headers(headers))
+```
+
+`request_10` is renamed to `Select 'Printed Chiffon Dress'`:
+
+```scala
+.exec(http("Select 'Printed Chiffon Dress'")
+	.get("/index.php?id_product=7&controller=product")
+	.headers(headers))
+```
+
+`request_11` is renamed to `Select 'Add to cart' button`:
+
+```scala
+.exec(http("Select 'Add to cart")
+	.post("/index.php?rand=1576956212168")
+	.headers(headers)
+	.formParam("controller", "cart")
+	.formParam("add", "1")
+	.formParam("ajax", "true")
+	.formParam("qty", "1")
+	.formParam("id_product", "7")
+	.formParam("token", "e817bb0705dd58da8db074c69f729fd8")
+	.formParam("ipa", "34"))
+```
+
+`request_12` is renamed to `Select 'Proceed to checkout' button`:
+
+```scala
+.exec(http("Select 'Proceed to checkout' button")
+	.get("/index.php?controller=order")
+	.headers(headers))
+```
+
+`request_13` is renamed to `Select 'Proceed to checkout' button`:
+
+```scala
+.exec(http("Select 'Proceed to checkout' button")
+	.get("/index.php?controller=order&step=1")
+	.headers(headers))
+```
+
+`request_14` is renamed to `Authentication page`:
+
+```scala
+.exec(http("Authentication page")
+	.get("/index.php?controller=authentication&multi-shipping=0&display_guest_checkout=0&back=http%3A%2F%2Fautomationpractice.com%2Findex.php%3Fcontroller%3Dorder%26step%3D1%26multi-shipping%3D0")
+	.headers(headers))
+```
+
+`request_18` is renamed to `Log in to user's account`:
+
+```scala
+.exec(http("Log in to user's account")
+	.post("/index.php?controller=authentication")
+	.headers(headers)
+	.formParam("email", "d6403887@urhen.com")
+	.formParam("passwd", "test123")
+	.formParam("back", "http://automationpractice.com/index.php?controller=order&step=1&multi-shipping=0")
+	.formParam("SubmitLogin", ""))
+```
+
+`request_19` is renamed to `Delivery page`:
+
+```scala
+.exec(http("Delivery page")
+	.get("/index.php?controller=order&step=1&multi-shipping=0")
+	.headers(headers))
+```
+
+`request_20` is renamed to `Select Proceed to checkout button`:
+
+```scala
+.exec(http("Select Proceed to checkout button")
+	.post("/index.php?controller=order")
+	.headers(headers)
+	.formParam("id_address_delivery", "248877")
+	.formParam("same", "1")
+	.formParam("message", "")
+	.formParam("step", "2")
+	.formParam("back", "")
+	.formParam("processAddress", ""))
+```
+
+`request_21` is renamed to `Select Proceed to checkout button`:
+
+```scala
+.exec(http("Select Proceed to checkout button")
+	.post("/index.php?controller=order&multi-shipping=")
+	.headers(headers)
+	.formParam("delivery_option[248877]", "2,")
+	.formParam("cgv", "1")
+	.formParam("step", "3")
+	.formParam("back", "")
+	.formParam("processCarrier", ""))
+```
+
+`request_22` is renamed to `Select Pay by bank wire`:
+
+```scala
+.exec(http("Select Pay by bank wire")
+	.get("/index.php?fc=module&module=bankwire&controller=payment")
+	.headers(headers))
+```
+
+`request_23` is renamed to `Bank wire validation`:
+
+```scala
+.exec(http("Bank wire validation")
+	.post("/index.php?fc=module&module=bankwire&controller=validation")
+	.headers(headers)
+	.formParam("currency_payement", "1"))
+```
+
+`request24_` is renamed to `Order confirmation`:
+
+```scala
+.exec(http("Order confirmation")
+	.get("/index.php?controller=order-confirmation&id_cart=1471161&id_module=3&id_order=154287&key=57d0627de3b5d408346f0e1d3996430e")
+	.headers(headers))
+```
